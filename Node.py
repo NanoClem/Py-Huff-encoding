@@ -137,8 +137,8 @@ class HuffNode(object):
         if not isinstance(other, HuffNode):
             raise TypeError('not and instance of HuffNode')
 
-        nodes = [self, other]
-        return HuffNode(label='#', freq=self.freq+other.freq, left=max(nodes), right=min(nodes))
+        nodes = sorted([self, other], reverse=True)
+        return HuffNode(label='#', freq=self.freq+other.freq, left=nodes[0], right=nodes[1])
 
 
     def __repr__(self) -> dict:
@@ -148,7 +148,7 @@ class HuffNode(object):
         -----
             dict -- object representation of the class instance.
         """
-        return str({'label': self.label, 'freq': self.freq, 'left': self.left, 'right': self.right})
+        return str({'label': self.label, 'freq': self.freq, 'left': self.left, 'right': self.right.code})
 
 
     def __str__(self) -> str:
@@ -158,4 +158,4 @@ class HuffNode(object):
         -----
             str -- object representation of the class.
         """
-        return f'label: {self.label}, freq: {self.freq}, left: {self.left}, right: {self.right}'
+        return f'label: {self.label}, freq: {self.freq}, code: {self.code}'
