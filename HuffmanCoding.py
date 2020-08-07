@@ -224,8 +224,6 @@ class HuffmanCoding(object):
 
         with open(input_file, 'r') as f, open(output_file, 'wb') as output:
             
-            print("-------- STARTING COMPRESSION")
-
             # TEXT AND FREQ MAP
             text    = f.read()
             freqMap = self.makeFreqMap(text)    # building freq map
@@ -244,7 +242,6 @@ class HuffmanCoding(object):
             b = self.getByteArray(pEncodedText)     # get bytearray of padded encoded text
             output.write(bytes(b))                  # write it as binary in output file
 
-        print("-------- COMPRESSION COMPLETED")
         return output_file
 
 
