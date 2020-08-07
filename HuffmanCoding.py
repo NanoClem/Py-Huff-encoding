@@ -32,17 +32,8 @@ class HuffmanCoding(object):
         """
         if not isinstance(newRoot, HuffNode):
             raise TypeError('not and instance of HuffNode')
+
         self._root = newRoot
-
-
-    def isLeaf(self) -> bool:
-        """ Tell if the current node instance is a leaf.
-        
-        Returns
-        -----
-            bool -- True if the current instance is a leaf
-        """
-        return not self.left and not self.right
 
 
     def scanTree(self, root: HuffNode) -> None:
@@ -121,3 +112,26 @@ class HuffmanCoding(object):
             heapq.heappush(heap, father)    # adding the new father node
 
         self._setRoot(heap[0])   # set the final resulting node as root of the Huffman Tree
+
+
+    def makeEncoding(self, root: HuffNode, code: str="") -> None:
+        """[summary]
+        
+        Parameters
+        -----
+            root (HuffNode) -- [description]
+            code (str) -- [description] (default: "")
+        
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
+        """
+        if not root:
+            return
+
+        if root.isLeaf():
+            self.codes[root.label] = code   # insert code in mapping
+            root.setCode(code)              # set code to the node
+
+        self.makeEncoding(root.left, code + '0')    # encode left node
+        self.makeEncoding(root.right, code + '1')   # encode right node

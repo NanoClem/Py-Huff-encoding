@@ -20,4 +20,8 @@ if __name__ == "__main__":
     Huff.mergeNodes(heap)
     
     # %%
-    Huff.scanTree(Huff.getRoot())
+    root = Huff.getRoot()
+    Huff.makeEncoding(root)
+    codes = Huff.codes
+
+# %%

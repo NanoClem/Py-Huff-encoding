@@ -12,7 +12,67 @@ class HuffNode(object):
         self.code  = ""
 
 
-    ##TODO: behavior when "other" is None or not instance of Node class
+    def isLeaf(self) -> bool:
+        """ Tell if the current node instance is a leaf.
+        
+        Returns
+        -----
+            bool -- True if the current instance is a leaf
+        """
+        return not self.left and not self.right
+
+
+    def setLeft(self, newLeft) -> None:
+        """[summary]
+        
+        Parameters
+        -----
+            newLeft ([type]) -- [description]
+        
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
+        """
+        if not isinstance(newLeft, HuffNode):
+            raise TypeError('not and instance of HuffNode')
+
+        self.left = newLeft
+
+
+    def setRight(self, newRight) -> None:
+        """[summary]
+        
+        Parameters
+        -----
+            newRight ([type]) -- [description]
+        
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
+        """
+        if not isinstance(newRight, HuffNode):
+            raise TypeError('not and instance of HuffNode')
+
+        self.left = newRight
+
+
+    def setCode(self, newCode: str) -> None:
+        """[summary]
+        
+        Parameters
+        -----
+            newCode (str) -- [description]
+        
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
+        """
+        if not isinstance(newCode, str):
+            raise TypeError('str expected')
+
+        self.code = newCode
+
+
     def __lt__(self, other) -> bool:
         """Overrides the lower than operator for the HuffNode class.
         The lowest node is the one with the lowest frequency.
@@ -20,15 +80,21 @@ class HuffNode(object):
         Parameters
         -----
             other (HuffNode) -- HuffNode to compare
+
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
         
         Returns
         -----
             bool -- True if the current node is lower than the given one.
         """
+        if not isinstance(other, HuffNode):
+            raise TypeError('not and instance of HuffNode')
+
         return self.freq < other.freq
 
     
-    ##TODO: behavior when "other" is None or not instance of Node class
     def __gt__(self, other):
         """Overrides the greater than operator for the HuffNode class.
         The greater node is the one with the highest frequency.
@@ -36,11 +102,18 @@ class HuffNode(object):
         Parameters
         -----
             other (HuffNode) -- HuffNode to compare
+
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
         
         Returns
         -----
             bool -- True if the current node is greater than the given one.
         """
+        if not isinstance(other, HuffNode):
+            raise TypeError('not and instance of HuffNode')
+
         return self.freq > other.freq
 
 
@@ -52,11 +125,18 @@ class HuffNode(object):
         Parameters
         -----
             other (HuffNode) -- HuffNode to add
+
+        Raises
+        -----
+            TypeError -- given instance should be a HuffNode
         
         Returns
         -----
             HuffNode -- new resulting HuffNode
         """
+        if not isinstance(other, HuffNode):
+            raise TypeError('not and instance of HuffNode')
+
         nodes = [self, other]
         return HuffNode(label='#', freq=self.freq+other.freq, left=max(nodes), right=min(nodes))
 
