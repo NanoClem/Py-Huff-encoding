@@ -90,7 +90,7 @@ class HuffNode(object):
             bool -- True if the current node is lower than the given one.
         """
         if not isinstance(other, HuffNode):
-            raise TypeError('not and instance of HuffNode')
+            raise TypeError('not an instance of HuffNode')
 
         return self.freq < other.freq
 
@@ -112,7 +112,7 @@ class HuffNode(object):
             bool -- True if the current node is greater than the given one.
         """
         if not isinstance(other, HuffNode):
-            raise TypeError('not and instance of HuffNode')
+            raise TypeError('not an instance of HuffNode')
 
         return self.freq > other.freq
 
@@ -135,7 +135,7 @@ class HuffNode(object):
             HuffNode -- new resulting HuffNode
         """
         if not isinstance(other, HuffNode):
-            raise TypeError('not and instance of HuffNode')
+            raise TypeError('not an instance of HuffNode')
 
         nodes = sorted([self, other], reverse=True)
         return HuffNode(label='#', freq=self.freq+other.freq, left=nodes[0], right=nodes[1])
