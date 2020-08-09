@@ -32,7 +32,7 @@ class HuffmanCoding(object):
             newRoot (HuffNode) -- new root of the tree
         """
         if not isinstance(newRoot, HuffNode):
-            raise TypeError('not and instance of HuffNode')
+            raise TypeError('not an instance of HuffNode')
 
         self._root = newRoot
 
@@ -207,7 +207,7 @@ class HuffmanCoding(object):
         return b
 
 
-    def compress(self, input_file: str) -> str:
+    def compression(self, input_file: str) -> str:
         """ Compress the given file with the Huffman method and
         write the result in a binary file.
         
@@ -263,3 +263,59 @@ class HuffmanCoding(object):
         pEncodedText = pEncodedText[8:]         # keep the text without padding info at the begining
 
         return pEncodedText[:-1 * padding]      # removing extra padding from the end
+
+
+    def decoding(self, encodedText: str) -> str:
+        """ Decode a given text encoded by the Huffman method.
+        Note that the given encoded text should not contain any padding.
+        
+        Parameters
+        -----
+            encodedText (str) -- source encoded text
+        
+        Returns
+        -----
+            str -- decoded source text
+        """
+        currentCode = ""
+        decodedText = ""
+
+        for bit in encodedText:
+            currentCode += bit
+            if currentCode in self.reverseMapping.keys():
+                decodedText += self.reverseMapping[currentCode]
+                currentCode = ""
+
+        return decodedText
+
+
+    def decompression(self, binaryFile: str) -> str:
+        """ Decompress a given binary file and returns 
+        the filename of the result.
+        
+        Parameters
+        -----
+            binaryFile (str) -- previously compressed source binary file
+        
+        Returns
+        -----
+            str -- decompressed file    
+        """
+        filename, extension = os.path.splitext(binaryFile)
+        decodedFile = filename + '_decompressed.txt' 
+
+        with open(binaryFile, 'rb') as f, open(decodedFile, 'w') as output:
+            bitCode = ""
+
+            byte = f.read(1)    # read only 1 byte = 8 bits
+            while len(byte) > 0:
+                byte = ord(byte)
+                bits = bin(byte)[2:].rjust(8, '0')
+                bitCode += bits
+                byte = f.read(1)
+
+            encodedText = self.removePadding(bitCode)
+            decompressedText = self.decoding(encodedText)
+            output.write(decompressedText)
+
+        return decodedFile
