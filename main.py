@@ -14,7 +14,7 @@ def checkOptns(args: list) -> None:
         SystemError -- Called if a wrong option is used
     """
     usage = f'USAGE : {args[0]} (--compression <textFile> | --decompression <binFile> <freqMap.dat>)'
-    opts  = ['--compression', '--decompression']
+    opts  = ['--help', '--compression', '--decompression']
 
     if len(args) < 2:
         raise SystemExit(f'Wrong number of arguments, {usage}')
@@ -50,7 +50,7 @@ def execCompression(args: list) -> str:
     Huff = HuffmanCoding()
 
     print("-------- STARTING COMPRESSION")
-    compressed = Huff.compression('alice.txt')
+    compressed = Huff.compression(args[2])
     print("-------- COMPRESSION COMPLETED")
 
     return compressed
@@ -86,7 +86,7 @@ def execDecompression(args: list) -> str:
     Huff = HuffmanCoding()
 
     print("-------- STARTING DECOMPRESSION")
-    decompressed = Huff.decompression('alice.bin')
+    decompressed = Huff.decompression(args[2], args[3])
     print("-------- DECOMPRESSION COMPLETED")
 
     return decompressed
@@ -101,6 +101,9 @@ if __name__ == "__main__":
     from HuffmanCoding import HuffmanCoding
     
     checkOptns(sys.argv)
+
+    if sys.argv[1] == '--help':
+        print(f'USAGE : {sys.argv[0]} --help | --compression <textFile> | --decompression <binFile> <freqMap.dat>')
 
     if sys.argv[1] == '--compression':
         execCompression(sys.argv)

@@ -77,6 +77,52 @@ class HuffmanCoding(object):
         return freqMap
 
 
+    def writeFreqFile(self, freqFilename: str, freqMap: dict) -> None:
+        """ Writes the given char frequencies mapping in a .dat file.
+        Resulting data will be written by rows as a csv style.
+        
+        Parameters
+        -----
+            freqFilename (str) -- output file where data will be written
+            freqMap (dict) -- mapping of char frequencies
+        """
+        try:
+            with open(freqFilename, 'w') as f:
+                for char,freq in freqMap.items():
+                    char = ord(char)    # ascii code conversion
+                    f.write(str(char) + ' ' + str(freq) + '\n')
+        except IOError as e:
+            print(f'Unable to open file {freqFilename} : {e}')
+
+
+    def readFreqFile(self, freqFilename: str) -> dict:
+        """ Builds a char frequencies mapping by reading data from the given file.
+        
+        Parameters
+        -----
+            freqFilename (str) -- file where mapping data are read
+        
+        Returns
+        -----
+            dict -- resulting char frequencies mapping
+        """
+        freqMap = {}
+        try:
+            with open(freqFilename, 'r') as f:
+                line = f.readline()
+                while line:
+                    data = line[:-1].split(' ')     # remove trailing LF and get mapping data
+                    char = chr(int(data[0]))        # converting ascii code to char
+                    freqMap[char] = int(data[1])    # building mapping
+                    line = f.readline()
+
+        except IOError as e:
+            print(f'Unable to open file {freqFilename} : {e}')
+
+        finally:
+            return freqMap
+
+
     def makeHeap(self, freqMap: dict) -> None:
         """Build a heap of Huffman nodes based on
         the given frequencies map.
@@ -221,28 +267,37 @@ class HuffmanCoding(object):
         """
         filename, extension = os.path.splitext(input_file)
         output_file = filename + '.bin'
+        freq_file = filename + '.dat'
 
-        with open(input_file, 'r') as f, open(output_file, 'wb') as output:
+        try:
+            with open(input_file, 'r') as f, open(output_file, 'wb') as output:
             
-            # TEXT AND FREQ MAP
-            text    = f.read()
-            freqMap = self.makeFreqMap(text)    # building freq map
+                # TEXT AND FREQ MAP
+                text    = f.read()
+                freqMap = self.makeFreqMap(text)    # building freq map
 
-            # BUILD HUFFMAN TREE
-            heap = self.makeHeap(freqMap)       # making heap
-            self.mergeNodes(heap)               # building Huffman Tree
-            root = self.getRoot()               # get the resulting tree
+                # WRITING CHAR FREQ FILE
+                self.writeFreqFile(freq_file, freqMap)
 
-            # INIT ENCODING
-            self.makeEncoding(root)                         # char encoding
-            encodedText = self.getEncodedText(text)         # encode text
-            pEncodedText = self.addPadding(encodedText)     # add padding
+                # BUILD HUFFMAN TREE
+                heap = self.makeHeap(freqMap)       # making heap
+                self.mergeNodes(heap)               # building Huffman Tree
+                root = self.getRoot()               # get the resulting tree
 
-            # BYTE AND OUTPUT
-            b = self.getByteArray(pEncodedText)     # get bytearray of padded encoded text
-            output.write(bytes(b))                  # write it as binary in output file
+                # INIT ENCODING
+                self.makeEncoding(root)                         # char encoding
+                encodedText = self.getEncodedText(text)         # encode text
+                pEncodedText = self.addPadding(encodedText)     # add padding
 
-        return output_file
+                # BYTE AND OUTPUT
+                b = self.getByteArray(pEncodedText)     # get bytearray of padded encoded text
+                output.write(bytes(b))                  # write it as binary in output file
+
+        except IOError as e:
+            print(f'Unable to open file : {e}')
+
+        finally:
+            return output_file
 
 
     def removePadding(self, pEncodedText: str) -> str:
@@ -289,7 +344,7 @@ class HuffmanCoding(object):
         return decodedText
 
 
-    def decompression(self, binaryFile: str) -> str:
+    def decompression(self, binaryFile: str, freqFile: str) -> str:
         """ Decompress a given binary file and returns 
         the filename of the result.
         
@@ -304,17 +359,26 @@ class HuffmanCoding(object):
         filename, extension = os.path.splitext(binaryFile)
         decodedFile = filename + '_decompressed.txt' 
 
-        with open(binaryFile, 'rb') as f, open(decodedFile, 'w') as output:
+        with open(binaryFile, 'rb') as f, open(freqFile, 'r'), open(decodedFile, 'w') as output:
             bitCode = ""
 
-            byte = f.read(1)    # read only 1 byte = 8 bits
+            byte = f.read(1)        # read only 1 byte = 8 bits
             while len(byte) > 0:
                 byte = ord(byte)
                 bits = bin(byte)[2:].rjust(8, '0')
                 bitCode += bits
                 byte = f.read(1)
 
-            encodedText = self.removePadding(bitCode)
+            encodedText = self.removePadding(bitCode)   # remove padding
+
+            # READING FREQ MAP
+            freqMap = self.readFreqFile(freqFile)
+
+            # REBUILD HUFFMAN TREE
+            heap = self.makeHeap(freqMap)       # making heap
+            self.mergeNodes(heap)               # building Huffman Tree
+            self.makeEncoding(self.getRoot())   # char encoding
+
             decompressedText = self.decoding(encodedText)
             output.write(decompressedText)
 
